@@ -1,43 +1,54 @@
-name: CI
+name: CI-CD Pipeline
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * *"
   push:
-    branches: [ main ]
+    branches: 
+      - main
   pull_request:
-    branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
+    name: Build Job
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Run a sample test
-        run: echo "CI workflow is running successfully!"name: CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  build-and-test:
+      - name: Echo user login
+        run: echo "Hello, $ {{ https://github.com/gizemmdinncc }}"
+  test: 
     runs-on: ubuntu-latest
-
-    steps:
+    name: Cypress Test Job
+    container: 
+      image: cypress/base:latest
+    
+    steps: 
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
+        with: 
+          node-version: 20
       - name: Install dependencies
         run: npm install
+      - name: Run Cypress Tests
+        run: npx cypress run
+      - name: Upload Cypress Videos
+        if: always()
+        uses:  actions/upload-artifact@v4
+        with: 
+          name: Cypress Videos
+          path: cypress/videos/**/*.mp4
+          retention-days: 1
+      - name: Upload Cypress Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: 
+          name: Cypress Screenshots
+          path: cypress/screenshots/**/*.mp4
+          retention-days: 1    
 
-      - name: Run tests
-        run: npm test
+    
