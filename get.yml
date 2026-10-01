@@ -18,7 +18,7 @@ config:
     thresholds: 
       - http.response_time.p95: 400
       - http.response_time.p99: 400
-     conditions:
+    conditions:
       - expression: "http.request_rate >= 0.01 and http.response_time.max < 1000"
 
   payload: 
