@@ -1,34 +1,56 @@
-name: Performance Test
+name: CI
+
+
+
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+
+
 
 jobs:
-  artillery:
+  build-and-test:
     runs-on: ubuntu-latest
+
+
+
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+
+
+
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      - name: Install Artillery
-        run: npm install -g artillery@latest
 
-      - name: Run performance test
-        env:
-          FIXER_API_KEY: ${{ secrets.FIXER_API_KEY }}
-        run: artillery run get.yml --output report.json
 
-      - name: Upload report
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./cypress
+
+
+
+
+      - name: Run Cypress tests
+        run: npx cypress run
+        working-directory: ./cypress
+
+
+
+
+      - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: artillery-report
-          path: report.json
+          name: screenshots
+          path: cypress/screenshots/**/*.png
