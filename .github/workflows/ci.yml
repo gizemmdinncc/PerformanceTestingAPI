@@ -22,13 +22,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Cypress tests
-        run: npx cypress run
-
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: cypress/screenshots/**/*.png
-          if-no-files-found: ignore
+      - name: Run Artillery performance test
+        run: npx artillery run get.yml
+        env:
+          FIXER_API_KEY: ${{ secrets.FIXER_API_KEY }}
