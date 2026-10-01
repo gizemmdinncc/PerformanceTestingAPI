@@ -48,3 +48,6 @@ scenarios:
               as: "host"
       - log: "Json value from response is:{{request.request_body}}"    
       - log: "Json value from response is: {{host}}"
+
+
+
